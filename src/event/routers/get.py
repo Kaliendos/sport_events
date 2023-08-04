@@ -18,6 +18,7 @@ async def get_events(query: EventQueries = Depends()) -> List[ReadEvent]:
 
 @router.get("/{event_id}")
 async def get_event(event_id: int, query: EventQueries = Depends()) -> ReadEventItem:
+
     return await query.get_event(event_id)
 
 @router.post("/")

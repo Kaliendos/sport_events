@@ -34,14 +34,19 @@ class EventQueries:
         )
         comments = text(
             f"""
-                SELECT to_jsonb(comment.*) FROM comment
-                INNER JOIN event ON comment.event_id = event.id WHERE event.id = {event_id}
+                SELECT json_build_object(
+                'text', comment.text,'username', 
+                "user".email
+                ) FROM comment 
+                INNER JOIN event ON comment.event_id = event.id 
+                JOIN "user" ON "user".id = comment.author_id
+                WHERE event.id = {event_id}
             """
         )
         event = await self.session.execute(sql)
         comments = await self.session.execute(comments)
         event = event.scalar()
-        comments = comments.scalars()
+        comments = comments.scalars().all()
         if event is None:
             raise HTTPException(status_code=404)
         event["comments"] = [comment for comment in comments]

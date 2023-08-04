@@ -24,10 +24,12 @@ class ReadEvent(BaseModel):
     location: LocationModel
     class Config:
         orm_mode = True
-
+        read_only = False
 
 class ReadEventItem(ReadEvent):
     comments: List[ReadComment]
+    pass
+
 
 class CreateEvent(BaseModel):
     city_id: int
