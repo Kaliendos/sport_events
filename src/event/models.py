@@ -27,6 +27,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     user_events = relationship("Event")
     event = relationship("Event", secondary=going_table)
     city_id = Column(Integer, ForeignKey("city.id"))
+    comments = relationship("Comment", cascade="all, delete", back_populates="author")
 
 
 
@@ -54,6 +55,17 @@ class Event(Base):
     description = Column(String(380))
     city_id = Column(Integer, ForeignKey("city.id", ondelete="CASCADE"))
     going: Mapped[List[User]] = relationship(secondary=going_table, back_populates="event")
+    comments = relationship("Comment", back_populates="event", cascade="all, delete")
+
+
+class Comment(Base):
+    __tablename__ = "comment"
+    id = Column(Integer, primary_key=True)
+    event_id = Column(Integer, ForeignKey("event.id", ondelete="CASCADE"))
+    event = relationship("Event", back_populates="comments")
+    author_id = Column(UUID, ForeignKey("user.id", ondelete="CASCADE"))
+    author = relationship("User", back_populates="comments")
+    text = Column(String(300))
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):

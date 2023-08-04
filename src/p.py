@@ -1,3 +1,8 @@
+import asyncio
+from asyncio import sleep
+from time import sleep as sp
+
+import redis
 
 graph = {
     'A': {'B', 'C'},
