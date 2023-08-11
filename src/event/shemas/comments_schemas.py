@@ -7,6 +7,14 @@ class ReadComment(BaseModel):
     text: str
     username: str
 
+    class ConfigDict:
+        from_attributes = True
 
-    class Config:
-        orm_mode = True
+
+
+class CreateComment(BaseModel):
+    text: str
+
+    class ConfigDict:
+        from_attributes = True
+

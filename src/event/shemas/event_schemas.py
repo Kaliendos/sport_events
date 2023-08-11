@@ -11,8 +11,8 @@ from src.event.shemas.comments_schemas import ReadComment
 class LocationModel(BaseModel):
     coordinates: List
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True
 
 
 class ReadEvent(BaseModel):
@@ -22,9 +22,10 @@ class ReadEvent(BaseModel):
     owner_id: UUID
     datetime: datetime.datetime
     location: LocationModel
-    class Config:
-        orm_mode = True
-        read_only = False
+
+    class ConfigDict:
+        from_attributes = True
+
 
 class ReadEventItem(ReadEvent):
     comments: List[ReadComment]
@@ -35,19 +36,19 @@ class CreateEvent(BaseModel):
     city_id: int
     description: str
     event_type: str
-    datetime: datetime.datetime
     location: str
-    class Config:
-        orm_mode = True
+
+    class ConfigDict:
+        from_attributes = True
 
 
-class PatchEvent(BaseModel):
+class UpdateEvent(BaseModel):
     city_id: int | None
     description: str | None
     event_type: str | None
     datetime: datetime.datetime | None
     location: str | None
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True
 

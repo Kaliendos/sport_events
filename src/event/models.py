@@ -44,6 +44,12 @@ class City(Base):
     events = relationship("Event", cascade="all, delete")
     dwellers = relationship("User")
 
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return self.title
+
 
 class Event(Base):
     __tablename__ = "event"
@@ -55,7 +61,7 @@ class Event(Base):
     description = Column(String(380))
     city_id = Column(Integer, ForeignKey("city.id", ondelete="CASCADE"))
     going: Mapped[List[User]] = relationship(secondary=going_table, back_populates="event")
-    comments = relationship("Comment", back_populates="event", cascade="all, delete")
+    comments = relationship("Comment", back_populates="event", cascade="all, delete", lazy="joined")
 
 
 class Comment(Base):
@@ -63,7 +69,7 @@ class Comment(Base):
     id = Column(Integer, primary_key=True)
     event_id = Column(Integer, ForeignKey("event.id", ondelete="CASCADE"))
     event = relationship("Event", back_populates="comments")
-    author_id = Column(UUID, ForeignKey("user.id", ondelete="CASCADE"))
+    owner_id = Column(UUID, ForeignKey("user.id", ondelete="CASCADE"))
     author = relationship("User", back_populates="comments")
     text = Column(String(300))
 
