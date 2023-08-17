@@ -1,14 +1,14 @@
+
+
 from abc import ABC, abstractmethod
-from typing import Dict
+
 
 from fastapi import Depends, HTTPException
-from sqlalchemy import text, select, insert, delete
+from sqlalchemy import select, insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_async_session
 from src.event.models import Event
-from src.event.shemas.event_schemas import UpdateEvent
-from src.utils import get_obj_or_404
 
 
 class AbstractCRUD(ABC):
@@ -44,6 +44,23 @@ class CRUDSet(AbstractCRUD):
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         self.session = session
 
+    async def get_obj_or_404(self,
+            model,
+            obj_id: int,
+
+    ):
+        """
+        Ищет модель в базе по параметру obj_id, если не находит - вызывает 404.
+        :param model:
+        :param obj_id:
+        :return obj or 404:
+        """
+
+        obj = await self.session.scalar(select(model).where(model.id == obj_id))
+        if obj is None:
+            raise HTTPException(status_code=404, detail="item not found")
+        return obj
+
     async def get_all(self):
         objects = await self.session.scalars(select(Event))
         return objects.all()
@@ -56,13 +73,12 @@ class CRUDSet(AbstractCRUD):
         await self.session.execute(query)
         await self.session.commit()
 
-    async def update(self, obj_id: int, data: UpdateEvent):
+    async def update(self, obj, data):
+        self.session.add(obj)
         scheme = data.model_dump(exclude_unset=True)
-        event_obj = await get_obj_or_404(self.model, obj_id)
         for field, value in scheme.items():
-            setattr(event_obj, field, value)
+            setattr(obj, field, value)
         await self.session.commit()
-        return event_obj
 
     async def delete(self, obj):
         await self.session.delete(obj)
@@ -71,3 +87,6 @@ class CRUDSet(AbstractCRUD):
     async def delete_by_id(self, obj_id: int):
         await self.session.execute(delete(Event).where(self.model.id == obj_id))
         await self.session.commit()
+
+    def __call__(self, *args, **kwargs):
+        return self.get_obj_or_404(*args, **kwargs)

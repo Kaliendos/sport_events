@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 
-from src.event.models import User, Comment, City
+from src.event.models import User, Comment
 from src.event.services import CommentService
-from src.event.shemas.comments_schemas import CreateComment
+from src.event.shemas.comments_schemas import CreateComment, UpdateComment
 from src.users.user_manager import current_user
 from src.utils import obj_permission
 
 router = APIRouter(prefix="/events")
 
 
-@router.post("/{event_id}/comments")
+@router.post("/{event_id}/comments", status_code=201)
 async def create_comment(
         schema: CreateComment,
         event_id: int,
@@ -29,12 +29,12 @@ async def delete_comment(
 ):
     return await service.delete(obj_id, event_id)
 
-@router.get("/city/{obj_id}")
-@obj_permission(City)
-async def delete_comment(
 
+@router.patch("/{event_id}/comments/{obj_id}")
+@obj_permission(Comment)
+async def update_comment(
         obj_id: int,
-        user: User = Depends(current_user)
-
-):
-    return "hello"
+        schema: UpdateComment,
+        service: CommentService = Depends(),
+        user=Depends(current_user)):
+    return await service.update(obj_id, schema)

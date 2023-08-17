@@ -1,5 +1,3 @@
-
-
 from sqlalchemy import text
 
 from src.core.core_sql_layer import CRUDSet
@@ -18,8 +16,9 @@ class EventCRUD(CRUDSet):
         comments = text(
             f"""
                       SELECT json_build_object(
-                      'text', comment.text,'username', 
-                      "user".email
+                      'text', comment.text,
+                      'username', "user".email,
+                      'id', comment.id
                       ) FROM comment 
                       INNER JOIN event ON comment.event_id = event.id 
                       JOIN "user" ON "user".id = comment.owner_id

@@ -1,14 +1,17 @@
 from functools import wraps
 
+
 from fastapi import HTTPException
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.database import async_session_maker
+from src.core.database import async_session_maker, get_async_session, engine
 
 
 async def get_obj_or_404(
         model,
         obj_id: int,
+
 ):
     """
     Ищет модель в базе по параметру obj_id, если не находит - вызывает 404.
@@ -21,8 +24,6 @@ async def get_obj_or_404(
         if obj is None:
             raise HTTPException(status_code=404, detail="item not found")
         return obj
-
-
 
 
 
@@ -54,3 +55,6 @@ def obj_permission(object):
             return await func(*args, **kwargs)
         return wrapper
     return dec
+
+
+

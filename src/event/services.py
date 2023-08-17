@@ -4,10 +4,11 @@ from typing import List, Dict
 from fastapi import Depends, HTTPException
 
 from src.event.models import Event, User, Comment
-from src.event.shemas.comments_schemas import CreateComment
+from src.event.shemas.comments_schemas import CreateComment, UpdateComment
 from src.event.shemas.event_schemas import ReadEvent, CreateEvent, UpdateEvent
 from src.event.db_operations import EventCRUD, CommentCrud
-from src.utils import obj_permission, get_obj_or_404
+
+from src.utils import get_obj_or_404
 
 
 class EventService:
@@ -33,10 +34,11 @@ class EventService:
         return await self.event_crud.create(data)
 
     async def update(self, obj_id: int, data: UpdateEvent, user: User):
-        return await self.event_crud.update(obj_id, data)
+        obj = await get_obj_or_404(Event, obj_id)
+        return await self.event_crud.update(obj, data)
 
     async def delete(self, obj_id: int):
-        event = await get_obj_or_404(Event, obj_id)
+        event = await self.event_crud.get_obj_or_404(Event, obj_id)
         return await self.event_crud.delete(event)
 
 
@@ -57,3 +59,7 @@ class CommentService:
         if len(comments) == 0:
             raise HTTPException(status_code=404)
         return await self.comment_crud.delete(comments.pop())
+
+    async def update(self, obj_id: int, data: UpdateComment):
+        obj = await self.comment_crud.get_obj_or_404(Comment, obj_id)
+        return await self.comment_crud.update(obj, data)

@@ -9,6 +9,7 @@ from src.event.shemas.event_schemas import ReadEvent, CreateEvent, ReadEventItem
 from src.users.user_manager import current_user
 from src.utils import obj_permission
 
+
 router = APIRouter(prefix="/events")
 
 

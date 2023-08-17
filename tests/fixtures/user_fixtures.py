@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import select
@@ -8,7 +10,7 @@ from tests.conftest import async_session_maker
 
 
 @pytest.fixture
-async def user_1(ac: AsyncClient):
+async def user_1(ac: AsyncClient) -> Dict:
     user_data = {
         'email': 'user1@gmail.com',
         'password': '123',
@@ -45,7 +47,12 @@ async def user_2(ac: AsyncClient):
     })
     auth_user = await ac.post('/auth/jwt/login', data={
         'username': user_data.get("email"), "password": user_data.get("password")})
-    return {"Authorization": f'bearer {auth_user.json().get("access_token")}'}
+    async with async_session_maker() as session:
+        user_id = await session.scalar(select(User.id).where(User.email == user_data.get("email")))
+    return {
+        "Authorization": f'bearer {auth_user.json().get("access_token")}',
+        "id": user_id
+    }
 
 
 

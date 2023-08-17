@@ -29,7 +29,6 @@ class ReadEvent(BaseModel):
 
 class ReadEventItem(ReadEvent):
     comments: List[ReadComment]
-    pass
 
 
 class CreateEvent(BaseModel):
@@ -43,11 +42,10 @@ class CreateEvent(BaseModel):
 
 
 class UpdateEvent(BaseModel):
-    city_id: int | None
-    description: str | None
-    event_type: str | None
-    datetime: datetime.datetime | None
-    location: str | None
+    city_id: int | None = None
+    description: str | None = None
+    event_type: str | None = None
+    location: str | None = None
 
     class ConfigDict:
         from_attributes = True

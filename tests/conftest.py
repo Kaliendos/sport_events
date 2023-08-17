@@ -40,6 +40,7 @@ async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
 app.dependency_overrides[get_async_session] = override_get_async_session
 
 
+
 @pytest.fixture(autouse=True, scope='session')
 async def prepare_database():
     async with test_engine.begin() as conn:
@@ -50,6 +51,7 @@ async def prepare_database():
 
 
 client = TestClient(app)
+
 
 
 @pytest.fixture(scope='session')
