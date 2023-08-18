@@ -7,6 +7,7 @@ from src.event.models import Event, User, Comment
 from src.event.shemas.comments_schemas import CreateComment, UpdateComment
 from src.event.shemas.event_schemas import ReadEvent, CreateEvent, UpdateEvent
 from src.event.db_operations import EventCRUD, CommentCrud
+from src.users.user_manager import current_user
 
 from src.utils import get_obj_or_404
 
@@ -16,8 +17,10 @@ class EventService:
     def __init__(self, event_crud: EventCRUD = Depends()):
         self.event_crud = event_crud
 
-    async def get_all(self) -> List[ReadEvent]:
-        return await self.event_crud.get_all()
+    async def get_all(self, offset, city_id: int, user) -> List[ReadEvent]:
+        if user:
+            city_id = user.city_id
+        return await self.event_crud.get_all(offset, city_id)
 
     async def get_one(self, pk: int):
         query = await self.event_crud.get_one(pk)

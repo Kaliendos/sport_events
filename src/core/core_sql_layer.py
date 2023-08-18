@@ -61,7 +61,7 @@ class CRUDSet(AbstractCRUD):
             raise HTTPException(status_code=404, detail="item not found")
         return obj
 
-    async def get_all(self):
+    async def get_all(self, *args):
         objects = await self.session.scalars(select(Event))
         return objects.all()
 
@@ -87,6 +87,3 @@ class CRUDSet(AbstractCRUD):
     async def delete_by_id(self, obj_id: int):
         await self.session.execute(delete(Event).where(self.model.id == obj_id))
         await self.session.commit()
-
-    def __call__(self, *args, **kwargs):
-        return self.get_obj_or_404(*args, **kwargs)

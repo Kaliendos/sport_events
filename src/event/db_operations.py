@@ -1,7 +1,10 @@
-from sqlalchemy import text
+from sqlalchemy import text, select
 
 from src.core.core_sql_layer import CRUDSet
 from src.event.models import Event, Comment
+
+from fastapi_pagination.ext.sqlalchemy import paginate
+EVENT_LIMIT_DEFAULT: int = 100
 
 
 class EventCRUD(CRUDSet):
@@ -29,9 +32,13 @@ class EventCRUD(CRUDSet):
         comments = await self.session.execute(comments)
         return event.scalar(), comments.scalars().all()
 
-    async def get_all(self):
+    async def get_all(self, offset, city_id: int):
         sql = text(
-            'SELECT to_jsonb(event.*) FROM event'
+            f"""
+            SELECT to_jsonb(event.*)
+            FROM event  WHERE city_id = {city_id} ORDER BY datetime 
+            LIMIT {EVENT_LIMIT_DEFAULT} OFFSET {offset}
+                """
         )
         events = await self.session.execute(sql)
         return events.scalars().all()

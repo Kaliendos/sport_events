@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from src.event.models import User, Comment
 from src.event.services import CommentService
 from src.event.shemas.comments_schemas import CreateComment, UpdateComment
-from src.users.user_manager import current_user
+from src.users.user_manager import current_user, current_user_optional
 from src.utils import obj_permission
 
 router = APIRouter(prefix="/events")
@@ -25,7 +25,7 @@ async def delete_comment(
         event_id: int,
         obj_id: int,
         service: CommentService = Depends(),
-        user: User = Depends(current_user),
+        user=Depends(current_user),
 ):
     return await service.delete(obj_id, event_id)
 

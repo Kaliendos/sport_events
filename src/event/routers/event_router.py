@@ -1,21 +1,36 @@
-from typing import List
+import time
+from typing import List, Optional
+from urllib.request import Request
+
 from fastapi import APIRouter, Depends, status
+from fastapi_cache import JsonCoder, FastAPICache
+from httpx import Response
 
 from src.event.services import EventService
-
+from fastapi_cache.decorator import cache
 from src.event.models import Event, User
 
 from src.event.shemas.event_schemas import ReadEvent, CreateEvent, ReadEventItem, UpdateEvent
-from src.users.user_manager import current_user
+from src.users.user_manager import current_user, current_user_optional
 from src.utils import obj_permission
+
+DEFAULT_CITY_ID = 1
 
 
 router = APIRouter(prefix="/events")
 
 
+
+
 @router.get("/")
-async def get_events(service: EventService = Depends()) -> List[ReadEvent]:
-    return await service.get_all()
+@cache(expire=90)
+async def get_events(
+        offset: int = 0,
+        city_id: int = DEFAULT_CITY_ID,
+        user: User = Depends(current_user_optional),
+        service: EventService = Depends()) -> List[ReadEvent]:
+
+    return await service.get_all(offset, city_id, user)
 
 
 @router.get("/{event_id}")
