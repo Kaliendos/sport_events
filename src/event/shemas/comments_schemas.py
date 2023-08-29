@@ -6,8 +6,7 @@ from pydantic import BaseModel
 class ReadComment(BaseModel):
     id: int
     text: str
-    username: str
-
+    name: str
 
     class ConfigDict:
         from_attributes = True

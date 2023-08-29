@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from src.event.models import User, Comment
+from src.event.models import Comment
 from src.event.services import CommentService
 from src.event.shemas.comments_schemas import CreateComment, UpdateComment
-from src.users.user_manager import current_user, current_user_optional
+from src.users.user_manager import current_user
 from src.utils import obj_permission
 
 router = APIRouter(prefix="/events")

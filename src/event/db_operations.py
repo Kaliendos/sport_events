@@ -4,7 +4,7 @@ from src.core.core_sql_layer import CRUDSet
 from src.event.models import Event, Comment
 
 from fastapi_pagination.ext.sqlalchemy import paginate
-EVENT_LIMIT_DEFAULT: int = 100
+EVENT_LIMIT_DEFAULT: int = 10
 
 
 class EventCRUD(CRUDSet):
@@ -20,7 +20,7 @@ class EventCRUD(CRUDSet):
             f"""
                       SELECT json_build_object(
                       'text', comment.text,
-                      'username', "user".email,
+                      'name', "user".first_name,
                       'id', comment.id
                       ) FROM comment 
                       INNER JOIN event ON comment.event_id = event.id 
@@ -36,7 +36,7 @@ class EventCRUD(CRUDSet):
         sql = text(
             f"""
             SELECT to_jsonb(event.*)
-            FROM event  WHERE city_id = {city_id} ORDER BY datetime 
+            FROM event  WHERE city_id = {city_id} ORDER BY datetime
             LIMIT {EVENT_LIMIT_DEFAULT} OFFSET {offset}
                 """
         )

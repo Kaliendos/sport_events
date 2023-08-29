@@ -9,7 +9,6 @@ from src.event.models import User, get_user_db
 from src.users.auth import SECRET, auth_backend
 
 
-
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET

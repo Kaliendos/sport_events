@@ -9,6 +9,7 @@ from src.users.user_manager import fastapi_users
 from src.event.routers.event_router import router as event_router
 from src.event.routers.comment_rourer import router as comment_router
 from fastapi.middleware.cors import CORSMiddleware
+from src.users.routers import user_router
 
 
 app = FastAPI(debug=True)
@@ -43,7 +44,7 @@ app.include_router(
 
 app.include_router(event_router)
 app.include_router(comment_router)
-
+app.include_router(user_router)
 
 @app.on_event("startup")
 async def startup():

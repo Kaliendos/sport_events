@@ -1,7 +1,8 @@
 
 
 from abc import ABC, abstractmethod
-
+from typing import Union
+from uuid import UUID
 
 from fastapi import Depends, HTTPException
 from sqlalchemy import select, insert, delete
@@ -31,7 +32,6 @@ class AbstractCRUD(ABC):
     @abstractmethod
     async def update(self, obj_id: int, data):
         raise NotImplementedError
-
 
 
 class CRUDSet(AbstractCRUD):
@@ -65,7 +65,7 @@ class CRUDSet(AbstractCRUD):
         objects = await self.session.scalars(select(Event))
         return objects.all()
 
-    async def get_one(self, obj_id: int):
+    async def get_one(self, obj_id: Union[int, UUID]):
         return await self.session.scalar(select(self.model).where(self.model.id == obj_id))
 
     async def create(self, data):
