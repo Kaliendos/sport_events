@@ -3,9 +3,11 @@ from functools import wraps
 
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.database import async_session_maker, get_async_session, engine
+from src.core.database import async_session_maker
+
+
+
 
 
 async def get_obj_or_404(
@@ -55,6 +57,9 @@ def obj_permission(object):
             return await func(*args, **kwargs)
         return wrapper
     return dec
+
+
+
 
 
 

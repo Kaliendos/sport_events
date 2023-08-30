@@ -65,7 +65,7 @@ class CRUDSet(AbstractCRUD):
         objects = await self.session.scalars(select(Event))
         return objects.all()
 
-    async def get_one(self, obj_id: Union[int, UUID]):
+    async def get_one(self, obj_id: Union[int, UUID], *args):
         return await self.session.scalar(select(self.model).where(self.model.id == obj_id))
 
     async def create(self, data):
@@ -87,3 +87,5 @@ class CRUDSet(AbstractCRUD):
     async def delete_by_id(self, obj_id: int):
         await self.session.execute(delete(Event).where(self.model.id == obj_id))
         await self.session.commit()
+
+

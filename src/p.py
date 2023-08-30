@@ -17,7 +17,7 @@ async def create_1000_events():
                 event_type='running',
                 datetime=datetime.datetime.now(),
                 location='POINT(55.676371 37.671569)',
-                owner_id="208f6840-bf8d-41ab-bc6e-a4994892cd75"
+                owner_id="e9be3352-c4a1-4c20-94b0-eecb9d8192e3"
 
             ))
             await session.commit()

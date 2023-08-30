@@ -7,7 +7,7 @@ from src.event.models import Event, User, Comment
 from src.event.shemas.comments_schemas import CreateComment, UpdateComment
 from src.event.shemas.event_schemas import ReadEvent, CreateEvent, UpdateEvent
 from src.event.db_operations import EventCRUD, CommentCrud
-from src.users.user_manager import current_user
+
 
 from src.utils import get_obj_or_404
 
@@ -20,14 +20,18 @@ class EventService:
     async def get_all(self, offset, city_id: int, user) -> List[ReadEvent]:
         if user:
             city_id = user.city_id
-        return await self.event_crud.get_all(offset, city_id)
+        events, city = await self.event_crud.get_all(offset, city_id)
+        for i in range(len(events)):
+            events[i]["city"] = city
+        return events
 
     async def get_one(self, pk: int):
         query = await self.event_crud.get_one(pk)
-        event, comments = query
+        event, comments, city = query
         if event is None:
             raise HTTPException(status_code=404)
         event["comments"] = [comment for comment in comments]
+        event["city"] = city
         return event
 
     async def create(self, data: CreateEvent, user: User):

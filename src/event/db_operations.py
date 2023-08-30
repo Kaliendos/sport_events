@@ -1,9 +1,9 @@
-from sqlalchemy import text, select
+from sqlalchemy import text, Select
 
 from src.core.core_sql_layer import CRUDSet
-from src.event.models import Event, Comment
+from src.event.models import Event, Comment, City
 
-from fastapi_pagination.ext.sqlalchemy import paginate
+
 EVENT_LIMIT_DEFAULT: int = 10
 
 
@@ -30,7 +30,8 @@ class EventCRUD(CRUDSet):
         )
         event = await self.session.execute(sql)
         comments = await self.session.execute(comments)
-        return event.scalar(), comments.scalars().all()
+        city_name = await self.session.scalar(Select(City.title).join(Event).where(Event.id == event_id))
+        return event.scalar(), comments.scalars().all(), city_name
 
     async def get_all(self, offset, city_id: int):
         sql = text(
@@ -41,7 +42,8 @@ class EventCRUD(CRUDSet):
                 """
         )
         events = await self.session.execute(sql)
-        return events.scalars().all()
+        city_name: str = await self.session.scalar(Select(City.title).where(City.id == city_id))
+        return events.scalars().all(), city_name
 
 
 class CommentCrud(CRUDSet):

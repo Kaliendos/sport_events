@@ -18,6 +18,7 @@ class LocationModel(BaseModel):
 class ReadEvent(BaseModel):
     id: int
     city_id: int
+    city: str  # Вычисляется название городо по city_id
     description: str
     owner_id: UUID
     datetime: datetime.datetime
