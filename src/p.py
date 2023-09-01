@@ -36,4 +36,4 @@ async def create_11_cities():
             await session.commit()
 
 
-asyncio.run(create_1000_events())
+asyncio.run(())

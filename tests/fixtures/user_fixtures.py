@@ -18,6 +18,10 @@ async def user_1(ac: AsyncClient) -> Dict:
         "is_active": True,
         "is_superuser": False,
         "is_verified": False,
+        "city_id": 1,
+        "first_name": "Vladsialav",
+        "last_name": "Kaliendo",
+        "date_of_birth": "2002-09-06"
     }
     await ac.post('/auth/register', json={
         **user_data
@@ -43,6 +47,10 @@ async def user_2(ac: AsyncClient, create_11_cities):
         "is_active": True,
         "is_superuser": False,
         "is_verified": False,
+        "city_id": 1,
+        "first_name": "Vladsialav",
+        "last_name": "Kaliendo",
+        "date_of_birth": "2002-09-06"
     }
     await ac.post('/auth/register', json={
         **user_data
