@@ -1,17 +1,18 @@
-"""events
+"""check
 
-Revision ID: 5ec3762f8451
+Revision ID: b2fdacd78dca
 Revises: 
-Create Date: 2023-07-26 16:32:50.402116
+Create Date: 2023-09-01 18:31:54.582088
 
 """
 import fastapi_users_db_sqlalchemy
+import geoalchemy2
 from alembic import op
 import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5ec3762f8451'
+revision = 'b2fdacd78dca'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,6 +27,10 @@ def upgrade() -> None:
     )
     op.create_table('user',
     sa.Column('city_id', sa.Integer(), nullable=True),
+    sa.Column('first_name', sa.String(length=50), nullable=False),
+    sa.Column('last_name', sa.String(length=50), nullable=False),
+    sa.Column('date_of_birth', sa.Date(), nullable=False),
+    sa.Column('avatar_image_path', sa.String(length=300), nullable=True),
     sa.Column('id', fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False),
     sa.Column('email', sa.String(length=320), nullable=False),
     sa.Column('hashed_password', sa.String(length=1024), nullable=False),
@@ -41,11 +46,28 @@ def upgrade() -> None:
     sa.Column('event_type', sa.Enum('cycling', 'running', 'workout', name='eventtype'), nullable=True),
     sa.Column('owner_id', sa.UUID(), nullable=True),
     sa.Column('datetime', sa.DateTime(), nullable=True),
+    sa.Column('location', geoalchemy2.types.Geometry(geometry_type='POINT', srid=4326, from_text='ST_GeomFromEWKT', name='geometry'), nullable=True),
     sa.Column('description', sa.String(length=380), nullable=True),
     sa.Column('city_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['city_id'], ['city.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
+    )
+    #op.create_index('idx_event_location', 'event', ['location'], unique=False, postgresql_using='gist')
+    op.create_table('comment',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('event_id', sa.Integer(), nullable=True),
+    sa.Column('owner_id', sa.UUID(), nullable=True),
+    sa.Column('text', sa.String(length=300), nullable=True),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('going_table',
+    sa.Column('event_id', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], )
     )
     #op.drop_table('spatial_ref_sys')
     # ### end Alembic commands ###
@@ -62,6 +84,9 @@ def downgrade() -> None:
     sa.CheckConstraint('srid > 0 AND srid <= 998999', name='spatial_ref_sys_srid_check'),
     sa.PrimaryKeyConstraint('srid', name='spatial_ref_sys_pkey')
     )
+    op.drop_table('going_table')
+    op.drop_table('comment')
+    op.drop_index('idx_event_location', table_name='event', postgresql_using='gist')
     op.drop_table('event')
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')

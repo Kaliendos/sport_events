@@ -10,19 +10,21 @@ from src.event.shemas.event_schemas import ReadEvent
 
 class UserRead(schemas.BaseUser[uuid.UUID]):
     city_id: int
-    city: str  # Вычисляетя название городо по city_id
     first_name: str
     last_name: str
     date_of_birth: datetime.date
-    events: List[ReadEvent]
-
+    # events: List[ReadEvent]
 
 class ProfileOtherRead(BaseModel):
     city_id: int
     first_name: str
+    city: str  # Вычисляетя название городо по city_id
     last_name: str
     date_of_birth: datetime.date
     events: List[ReadEvent]
+    events: List[ReadEvent]
+    avatar_image_path: str | None = None
+    is_active: bool = True
 
     class ConfigDict:
         from_attributes = True

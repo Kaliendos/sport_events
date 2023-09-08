@@ -12,12 +12,12 @@ async def create_1000_events():
     for i in range(1000):
         async with async_session_maker() as session:
             await session.execute(insert(Event).values(
-                city_id=random.randrange(1,13),
+                city_id=random.randrange(1,12),
                 description='Бегать',
                 event_type='running',
                 datetime=datetime.datetime.now(),
                 location='POINT(55.676371 37.671569)',
-                owner_id="e9be3352-c4a1-4c20-94b0-eecb9d8192e3"
+                owner_id="e96d6690-73ee-4954-8bce-0e9c98f742f4"
 
             ))
             await session.commit()
@@ -36,4 +36,4 @@ async def create_11_cities():
             await session.commit()
 
 
-asyncio.run(())
+asyncio.run(create_1000_events())

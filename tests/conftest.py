@@ -19,8 +19,9 @@ dotenv.load_dotenv()
 
 DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
+print(DB_PASSWORD)
 DB_HOST = os.environ.get("DB_HOST")
-SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5433/tests"
+SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:superpassword@{DB_HOST}:5433/tests"
 
 
 test_engine = create_async_engine(SQLALCHEMY_DATABASE_URL)

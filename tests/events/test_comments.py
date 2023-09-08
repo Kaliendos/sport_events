@@ -8,12 +8,12 @@ from starlette import status
 
 from src.event.models import Comment, Event
 from tests.conftest import async_session_maker
-from tests.events.test_events import user_1, user_1_auth_header, user_2_auth_header
 from tests.fixtures.events_fixture import event_1, city, event_2, create_11_cities
-from tests.fixtures.user_fixtures import user_2
+from tests.fixtures.user_fixtures import user_2, user_1_register_data, user_1_auth_header, user_2_auth_header, user_1
 
 
 USER_1_USERNAME = "user1@gmail.com"
+USER_1_FIRST_NAME = user_1_register_data.get("first_name")
 @pytest.fixture
 def create_comment_data():
     return {
@@ -117,7 +117,7 @@ class TestComments:
             "Проверьте, что при создании коменатрия, к нему добавляется корректный owner_id"
         )
 
-    async def test_create_comment_has_correct_username(
+    async def test_create_comment_has_correct_name(
             self, user_1_auth_header, create_comment_data, event_1: Event, ac: AsyncClient):
         await ac.post(
             f"events/{event_1.id}/comments",
@@ -128,7 +128,7 @@ class TestComments:
             f"events/{event_1.id}",
         )
         last_comment = event.json().get("comments")[-1]
-        assert last_comment.get("username") == USER_1_USERNAME, (
+        assert last_comment.get("name") == USER_1_FIRST_NAME, (
             "Проверьте правильность имени автора комменатрия"
         )
 
@@ -198,7 +198,6 @@ class TestComments:
         assert before_patched_text == pathced_comment.text, (
             "Проверьте, что коменатрий не может изменить не автор"
         )
-
 
     async def test_patch_comment(
             self, user_2_auth_header,  create_comment_data,

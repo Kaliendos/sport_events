@@ -6,23 +6,11 @@ from httpx import AsyncClient
 from sqlalchemy import func, select
 from starlette import status
 
-from src.event.models import Event
+from src.event.models import Event, City
 from src.event.shemas.event_schemas import ReadEvent
 from tests.conftest import async_session_maker
-from tests.fixtures.user_fixtures import user_1, user_2
-from tests.fixtures.events_fixture import event_1, city, create_100_events, create_11_cities
-
-
-@pytest.fixture
-async def user_1_auth_header(user_1: Dict):
-    token = user_1.get("Authorization")
-    return {"Authorization": token}
-
-
-@pytest.fixture
-async def user_2_auth_header(user_2: Dict):
-    token = user_2.get("Authorization")
-    return {"Authorization": token}
+from tests.fixtures.user_fixtures import user_1, user_2, user_1_auth_header, user_2_auth_header
+from tests.fixtures.events_fixture import event_1, city, create_30_events, create_11_cities
 
 
 @pytest.fixture
@@ -37,7 +25,7 @@ async def create_event_data():
 
 class TestEvents:
 
-    async def test_get_events(self, ac: AsyncClient, create_100_events):
+    async def test_get_events(self, ac: AsyncClient, create_30_events):
         """Для этого теста нужно отключить кэш на events"""
         DEFAULT_CITY_ID = 1
         res = await ac.get("events/")
@@ -164,18 +152,41 @@ class TestEvents:
         res = await ac.delete(
             f"events/{event_1.id}",
         )
-
         assert res.status_code == 401
         async with async_session_maker() as session:
             removed_event = await session.scalar(select(Event).where(Event.id == int(event_1.id)))
         assert removed_event
+
+
+    async def test_event_has_correct_city_nam(self, ac: AsyncClient, event_1):
+        """Проверка правильности названия города"""
+        res = await ac.get(f"events/{event_1.id}")
+        async with async_session_maker() as session:
+            city_title = await session.scalar(select(City.title).where(City.id == event_1.city_id))
+        assert res.json().get("city") == city_title
+
+    async def test_events_has_user_city(
+            self, user_1, user_1_auth_header: Dict, ac: AsyncClient, create_30_events):
+        """Проверка того, что авторизонный пользователь получает ивенты своего города"""
+        res = await ac.get("events/", headers=user_1_auth_header)
+        events = res.json()
+        for i in events:
+            if i.get("city_id") != user_1.get("city_id"):
+                assert False , ("Проверьте, что пользователь получает события из своего города")
+
+    async def test_city_selection(self, ac: AsyncClient, create_30_events):
+        SOME_CITY_ID = 3
+        res = await ac.get(f"events/?city_id={SOME_CITY_ID}")
+        events = res.json()
+        for event in events:
+            if event.get("city_id") != SOME_CITY_ID:
+                 assert False , ("Проверьте правильность выьорки событий по городоам ")
 
     async def test_delete_event_by_owner(self, event_1: Event, user_1_auth_header, ac: AsyncClient):
         res = await ac.delete(
             f"events/{event_1.id}",
             headers={**user_1_auth_header}
         )
-
         assert res.status_code == 200
 
         async with async_session_maker() as session:

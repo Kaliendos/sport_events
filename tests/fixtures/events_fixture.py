@@ -1,6 +1,7 @@
 import datetime
 import random
 import string
+from typing import Dict
 
 import pytest
 from httpx import AsyncClient
@@ -46,7 +47,7 @@ async def city2():
 
 
 @pytest.fixture
-async def event_1(city, ac: AsyncClient, user_1):
+async def event_1(city, ac: AsyncClient, user_1: Dict):
 
     async with async_session_maker() as session:
         await session.execute(sa.insert(Event).values(
@@ -84,8 +85,8 @@ async def event_2(city2, ac: AsyncClient, user_2):
 
 
 @pytest.fixture
-async def create_100_events(user_1):
-    for i in range(10):
+async def create_30_events(user_1: Dict):
+    for i in range(30):
         letters = string.ascii_lowercase
         rand_string = ''.join(random.choice(letters) for i in range(20))
         async with async_session_maker() as session:
@@ -99,5 +100,4 @@ async def create_100_events(user_1):
 
             ))
             await session.commit()
-
 

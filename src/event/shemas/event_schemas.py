@@ -28,12 +28,18 @@ class ReadEvent(BaseModel):
         from_attributes = True
 
 
+class GoingUser(BaseModel):
+    first_name: str
+
+
 class ReadEventItem(ReadEvent):
     comments: List[ReadComment]
+    going: List
+    #user_id: UUID
 
 
 class CreateEvent(BaseModel):
-    city_id: int
+    city_id: int | None = None
     description: str
     event_type: str
     location: str

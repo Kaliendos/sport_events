@@ -18,7 +18,7 @@ class EventService:
         self.event_crud = event_crud
 
     async def get_all(self, offset, city_id: int, user) -> List[ReadEvent]:
-        if user:
+        if user and city_id == 1: # 1 - это дефолтное значение city_id в routers
             city_id = user.city_id
         events, city = await self.event_crud.get_all(offset, city_id)
         for i in range(len(events)):
@@ -27,21 +27,24 @@ class EventService:
 
     async def get_one(self, pk: int):
         query = await self.event_crud.get_one(pk)
-        event, comments, city = query
+        event, comments, city, going = query
         if event is None:
             raise HTTPException(status_code=404)
         event["comments"] = [comment for comment in comments]
         event["city"] = city
+        event["going"] = [user for user in going]
         return event
 
     async def create(self, data: CreateEvent, user: User):
         data = data.model_dump()
         data["owner_id"] = user.id
         data["datetime"] = datetime.datetime.now()
+        if data["city_id"] is None:
+            data["city_id"] = user.city_id
         return await self.event_crud.create(data)
 
     async def update(self, obj_id: int, data: UpdateEvent, user: User):
-        obj = await get_obj_or_404(Event, obj_id)
+        obj = await self.event_crud.get_obj_or_404(Event, obj_id)
         return await self.event_crud.update(obj, data)
 
     async def delete(self, obj_id: int):
@@ -60,7 +63,7 @@ class CommentService:
         await self.comment_crud.create(data)
 
     async def delete(self, obj_id: int, event_id: int):
-        event = await get_obj_or_404(Event, event_id)
+        event = await self.comment_crud.get_obj_or_404(Event, event_id)
         comments = event.comments
         comments = [comment for comment in comments if comment.id == obj_id] # селекция нужного комментария
         if len(comments) == 0:

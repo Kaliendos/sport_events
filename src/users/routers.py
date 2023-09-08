@@ -16,7 +16,7 @@ async def users_me(
         user: User = Depends(current_user),
         service: UserService = Depends(),
         offset: int = 0
-) -> UserRead:
+) -> ProfileOtherRead:
     return await service.get_user_profile(user.id, offset)
 
 

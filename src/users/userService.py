@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 
 from src.event.models import  City
 from src.users.db_operations import UserCrud
@@ -13,6 +13,8 @@ class UserService:
     async def get_user_profile(self, user_id: UUID, offset):
         res = await self.user_crud.get_one(user_id, offset)
         events, user, city, event_city_name = res
+        if user is None:
+            raise HTTPException(status_code=404)
         user["events"] = [_ for _ in events]
         user["city"] = city
         for i in range(len(events)):

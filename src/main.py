@@ -16,7 +16,8 @@ app = FastAPI(debug=True)
 
 origins = [
     "http://localhost:3000",
-    "http://localhost"
+    "http://localhost",
+    "*"
 ]
 
 
@@ -51,6 +52,7 @@ app.include_router(
     prefix="/auth",
     tags=["auth"],
 )
+
 @app.on_event("startup")
 async def startup():
     redis = aioredis.from_url("redis://localhost")
