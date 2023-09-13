@@ -13,8 +13,17 @@ class EventCRUD(CRUDSet):
     async def get_one(self, event_id: int):
         get_event_by_id = text(
             f'''
-                 SELECT to_jsonb(event.*) FROM event
-                 WHERE id = {event_id}
+            SELECT  json_build_object(
+                'id', event.id,
+                'city_id', event.city_id,
+                'city', city.title,
+                'description', event.description,
+                'owner_id', event.owner_id,
+                'datetime', event.datetime,
+                'location', event.location
+            ) FROM event INNER JOIN city
+            ON event.city_id = city.id
+                 WHERE event.id = {event_id}
             '''
         )
         get_going_users = text(
@@ -37,13 +46,10 @@ class EventCRUD(CRUDSet):
         )
         event = await self.session.execute(get_event_by_id)
         comments = await self.session.execute(get_event_comments)
-        city_name = await self.session.scalar(
-            Select(City.title).join(Event).where(Event.id == event_id)
-        )
         going_users = await self.session.execute(get_going_users)
         going_users = going_users.scalars().all()
         event = event.scalar()
-        return event, comments.scalars().all(), city_name, going_users
+        return event, comments.scalars().all(), going_users
 
     async def get_all(self, offset: int, city_id: int):
         """
@@ -54,16 +60,21 @@ class EventCRUD(CRUDSet):
         """
         get_events_list = text(
             f"""
-            SELECT to_jsonb(event.*)
-            FROM event  WHERE city_id = {city_id} ORDER BY datetime DESC
+            SELECT json_build_object(
+            'id', event.id,
+            'city_id', event.city_id,
+            'city', city.title,
+            'description', event.description,
+            'owner_id', event.owner_id,
+            'datetime', event.datetime,
+            'location', event.location
+            )
+            FROM event INNER JOIN city ON event.city_id = city.id  WHERE city_id = {city_id} ORDER BY datetime DESC
             LIMIT {EVENT_LIMIT_DEFAULT} OFFSET {offset}
                 """
         )
         events = await self.session.execute(get_events_list)
-        city_name: str = await self.session.scalar(
-            Select(City.title).where(City.id == city_id)
-        )
-        return events.scalars().all(), city_name
+        return events.scalars().all()
 
 
 class CommentCrud(CRUDSet):

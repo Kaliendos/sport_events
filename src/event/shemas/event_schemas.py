@@ -2,7 +2,7 @@ import datetime
 from typing import List
 from uuid import UUID
 
-
+from asyncpg import Point
 from pydantic import BaseModel
 
 from src.event.shemas.comments_schemas import ReadComment

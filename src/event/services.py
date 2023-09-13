@@ -17,18 +17,15 @@ class EventService:
     async def get_all(self, offset, city_id: int, user) -> List[ReadEvent]:
         if user and city_id == 1:  # 1 - дефолтное значение city_id в routers
             city_id = user.city_id
-        events, city = await self.event_crud.get_all(offset, city_id)
-        for i in range(len(events)):
-            events[i]["city"] = city
+        events = await self.event_crud.get_all(offset, city_id)
         return events
 
     async def get_one(self, pk: int):
         query = await self.event_crud.get_one(pk)
-        event, comments, city_title, going = query
+        event, comments, going = query
         if event is None:
             raise HTTPException(status_code=404)
         event["comments"] = [comment for comment in comments]
-        event["city"] = city_title
         event["going"] = [user for user in going]
         return event
 
