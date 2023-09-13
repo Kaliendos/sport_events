@@ -13,7 +13,7 @@ class UserRead(schemas.BaseUser[uuid.UUID]):
     first_name: str
     last_name: str
     date_of_birth: datetime.date
-    # events: List[ReadEvent]
+
 
 class ProfileOtherRead(BaseModel):
     city_id: int
@@ -43,4 +43,3 @@ class UserUpdate(schemas.BaseUserUpdate):
     last_name: str | None = None
     city_id: int | None = None
     avatar_image_path: str | None = None
-

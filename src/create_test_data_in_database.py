@@ -12,7 +12,7 @@ async def create_1000_events():
     for i in range(1000):
         async with async_session_maker() as session:
             await session.execute(insert(Event).values(
-                city_id=random.randrange(1,12),
+                city_id=random.randrange(1, 12),
                 description='Бегать',
                 event_type='running',
                 datetime=datetime.datetime.now(),
@@ -25,8 +25,9 @@ async def create_1000_events():
 
 async def create_11_cities():
     cities_name = (
-        "Санкт Петербург", "Калининград", "Казань", "Нижний Новгород", "Новосибирск",
-        "Тула", "Тверь", "Владивосток", "Сочи", "Ростов", "Краснодар"
+        "Санкт Петербург", "Калининград", "Казань",
+        "Нижний Новгород", "Новосибирск", "Тула"
+        "Тверь", "Владивосток", "Сочи", "Ростов", "Краснодар"
     )
     for city in cities_name:
         async with async_session_maker() as session:

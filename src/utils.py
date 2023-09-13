@@ -7,9 +7,6 @@ from sqlalchemy import select
 from src.core.database import async_session_maker
 
 
-
-
-
 async def get_obj_or_404(
         model,
         obj_id: int,
@@ -28,11 +25,10 @@ async def get_obj_or_404(
         return obj
 
 
-
 def obj_permission(object):
     """
-    Проверяет авторство объекта. Если юзер не является автором объекта, вызывает 403.
-
+    Проверяет авторство объекта.
+    Если юзер не является автором объекта, вызывает 403.
     Функция обязательно доллжна принмать агрусенты obj_id и user.
     :param object: Модель бд
     """
@@ -51,15 +47,9 @@ def obj_permission(object):
                     raise HTTPException(status_code=403)
             except AttributeError:
                 raise AttributeError(
-                    f"Объект {object} не имеет поля 'owner_id', для исправления"
-                    "ошибки, добавьте owner_id в модель"
-                )
+                    f"Объект {object} не имеет поля 'owner_id',"
+                    "для исправления ошибки,"
+                    "добавьте owner_id в модель")
             return await func(*args, **kwargs)
         return wrapper
     return dec
-
-
-
-
-
-

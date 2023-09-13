@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from src.event.models import Comment
+from src.event.models import Comment, User
 from src.event.services import CommentService
 from src.event.shemas.comments_schemas import CreateComment, UpdateComment
 from src.users.user_manager import current_user
@@ -25,7 +25,7 @@ async def delete_comment(
         event_id: int,
         obj_id: int,
         service: CommentService = Depends(),
-        user=Depends(current_user),
+        user: User = Depends(current_user),
 ):
     return await service.delete(obj_id, event_id)
 
@@ -36,5 +36,5 @@ async def update_comment(
         obj_id: int,
         schema: UpdateComment,
         service: CommentService = Depends(),
-        user=Depends(current_user)):
+        user: User = Depends(current_user)):
     return await service.update(obj_id, schema)

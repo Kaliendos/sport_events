@@ -4,10 +4,10 @@ from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
 
 from src.users.auth import auth_backend
-from src.users.schemas import UserRead, UserCreate, UserUpdate
+from src.users.schemas import UserRead, UserCreate
 from src.users.user_manager import fastapi_users
 from src.event.routers.event_router import router as event_router
-from src.event.routers.comment_rourer import router as comment_router
+from src.event.routers.comment_router import router as comment_router
 from fastapi.middleware.cors import CORSMiddleware
 from src.users.routers import user_router
 
@@ -53,10 +53,8 @@ app.include_router(
     tags=["auth"],
 )
 
+
 @app.on_event("startup")
 async def startup():
     redis = aioredis.from_url("redis://localhost")
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-
-
-

@@ -1,12 +1,16 @@
 import enum
 from typing import List
 
-from sqlalchemy import Column, Table, Integer, ForeignKey, DateTime, Enum, String, Date
+from sqlalchemy import (
+    Column, Table, Integer, ForeignKey, DateTime, Enum, String, Date
+)
 
 from geoalchemy2 import Geometry
 
 from fastapi import Depends
-from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
+from fastapi_users_db_sqlalchemy import (
+    SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
+)
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship, Mapped
@@ -24,10 +28,14 @@ going_table = Table(
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
-    user_events = relationship("Event", back_populates="owner", lazy="joined")
+    user_events = relationship(
+        "Event", back_populates="owner", lazy="joined"
+    )
     event = relationship("Event", secondary=going_table)
     city_id = Column(Integer, ForeignKey("city.id"))
-    comments = relationship("Comment", cascade="all, delete", back_populates="author")
+    comments = relationship(
+        "Comment", cascade="all, delete", back_populates="author"
+    )
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     date_of_birth = Column(Date, nullable=False)
@@ -63,8 +71,12 @@ class Event(Base):
     location = Column(Geometry("POINT", srid=4326))
     description = Column(String(380))
     city_id = Column(Integer, ForeignKey("city.id", ondelete="CASCADE"))
-    going: Mapped[List[User]] = relationship(secondary=going_table, back_populates="event")
-    comments = relationship("Comment", back_populates="event", cascade="all, delete", lazy="joined")
+    going: Mapped[List[User]] = relationship(
+        secondary=going_table, back_populates="event"
+    )
+    comments = relationship(
+        "Comment", back_populates="event", cascade="all, delete", lazy="joined"
+    )
     owner = relationship("User")
 
 

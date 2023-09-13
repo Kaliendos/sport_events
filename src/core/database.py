@@ -12,14 +12,17 @@ DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_HOST = os.environ.get("DB_HOST")
 DB_NAME = os.environ.get("DB_NAME")
-SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
-
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5433/tests"
+)
 
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 
 
-async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+async_session_maker = sessionmaker(
+    engine, class_=AsyncSession, expire_on_commit=False
+)
 
 
 Base = declarative_base()
@@ -28,4 +31,3 @@ Base = declarative_base()
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
-

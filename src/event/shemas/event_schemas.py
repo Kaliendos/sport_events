@@ -35,7 +35,6 @@ class GoingUser(BaseModel):
 class ReadEventItem(ReadEvent):
     comments: List[ReadComment]
     going: List
-    #user_id: UUID
 
 
 class CreateEvent(BaseModel):
@@ -56,4 +55,3 @@ class UpdateEvent(BaseModel):
 
     class ConfigDict:
         from_attributes = True
-

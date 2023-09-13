@@ -1,5 +1,3 @@
-
-
 from abc import ABC, abstractmethod
 from typing import Union
 from uuid import UUID
@@ -8,8 +6,9 @@ from fastapi import Depends, HTTPException
 from sqlalchemy import select, insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.database import get_async_session
+from src.core.database import get_async_session, Base
 from src.event.models import Event
+from typing import Type
 
 
 class AbstractCRUD(ABC):
@@ -39,16 +38,14 @@ class CRUDSet(AbstractCRUD):
     Предоставляет базовый интерфейс CRUD для работы с базой данных,
     при необходимости методы можно переопределить.
     """
-    model = None
+    model: Type[Base] | None = None
 
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         self.session = session
 
-    async def get_obj_or_404(self,
-            model,
-            obj_id: int,
-
-    ):
+    async def get_obj_by_id_or_404(
+            self, model, obj_id: int,
+    ) -> model | HTTPException:
         """
         Ищет модель в базе по параметру obj_id, если не находит - вызывает 404.
         :param model:
@@ -56,7 +53,9 @@ class CRUDSet(AbstractCRUD):
         :return obj or 404:
         """
 
-        obj = await self.session.scalar(select(model).where(model.id == obj_id))
+        obj = await self.session.scalar(
+            select(model).where(model.id == obj_id)
+        )
         if obj is None:
             raise HTTPException(status_code=404, detail="item not found")
         return obj
@@ -66,7 +65,9 @@ class CRUDSet(AbstractCRUD):
         return objects.all()
 
     async def get_one(self, obj_id: Union[int, UUID], *args):
-        return await self.session.scalar(select(self.model).where(self.model.id == obj_id))
+        return await self.session.scalar(
+            select(self.model).where(self.model.id == obj_id)
+        )
 
     async def create(self, data):
         query = insert(self.model).values(**data)
@@ -75,8 +76,8 @@ class CRUDSet(AbstractCRUD):
 
     async def update(self, obj, data):
         self.session.add(obj)
-        scheme = data.model_dump(exclude_unset=True)
-        for field, value in scheme.items():
+        data_dump = data.model_dump(exclude_unset=True)
+        for field, value in data_dump.items():
             setattr(obj, field, value)
         await self.session.commit()
 
@@ -85,7 +86,7 @@ class CRUDSet(AbstractCRUD):
         await self.session.commit()
 
     async def delete_by_id(self, obj_id: int):
-        await self.session.execute(delete(Event).where(self.model.id == obj_id))
+        await self.session.execute(
+            delete(Event).where(self.model.id == obj_id)
+        )
         await self.session.commit()
-
-
