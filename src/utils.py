@@ -4,6 +4,7 @@ from functools import wraps
 from fastapi import HTTPException
 from sqlalchemy import select
 
+from src.core.core_sql_layer import CRUDSet
 from src.core.database import async_session_maker
 
 
@@ -41,8 +42,8 @@ def obj_permission(object):
                 raise KeyError("Остутсвует ключ obj_id в аргументе")
             if user is None:
                 raise KeyError("Остутсвует ключ user в аргументе")
-            obj = await get_obj_or_404(object, obj_id)
             try:
+                obj = await get_obj_or_404(object, obj_id)
                 if obj.owner_id != user.id:
                     raise HTTPException(status_code=403)
             except AttributeError:

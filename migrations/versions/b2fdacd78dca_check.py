@@ -53,7 +53,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    #op.create_index('idx_event_location', 'event', ['location'], unique=False, postgresql_using='gist')
+    op.create_index('idx_event_location', 'event', ['location'], unique=False, postgresql_using='gist')
     op.create_table('comment',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('event_id', sa.Integer(), nullable=True),

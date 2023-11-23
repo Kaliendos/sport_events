@@ -4,6 +4,7 @@ from typing import List
 
 from fastapi_users import schemas
 from pydantic import BaseModel
+from fastapi.responses import FileResponse
 
 from src.event.shemas.event_schemas import ReadEvent
 

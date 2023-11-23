@@ -43,6 +43,7 @@ class CRUDSet(AbstractCRUD):
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         self.session = session
 
+
     async def get_obj_by_id_or_404(
             self, model, obj_id: int,
     ) -> model | HTTPException:
@@ -61,7 +62,7 @@ class CRUDSet(AbstractCRUD):
         return obj
 
     async def get_all(self, *args):
-        objects = await self.session.scalars(select(Event))
+        objects = await self.session.scalars(select(self.model))
         return objects.all()
 
     async def get_one(self, obj_id: Union[int, UUID], *args):

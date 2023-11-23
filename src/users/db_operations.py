@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from fastapi import HTTPException
 from sqlalchemy import text, Select, join
 
 from src.core.core_sql_layer import CRUDSet
@@ -20,3 +21,8 @@ class UserCrud(CRUDSet):
         user = await self.session.execute(user)
         event_city_name = await self.session.execute(Select(City.title).join(Event).where(Event.owner_id == obj_id))
         return events, user.scalar(), user_city_name, event_city_name.scalars().all()
+
+    async def get_user_by_email(self, email: str):
+        user = await self.session.scalar(Select(User.id).where(User.email == email))
+
+        return user

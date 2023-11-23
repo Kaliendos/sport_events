@@ -79,3 +79,7 @@ class EventCRUD(CRUDSet):
 
 class CommentCrud(CRUDSet):
     model = Comment
+
+
+class CityCrud(CRUDSet):
+    model = City

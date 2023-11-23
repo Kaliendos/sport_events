@@ -5,6 +5,7 @@ from typing import AsyncGenerator
 
 import dotenv
 import pytest
+from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
@@ -13,16 +14,15 @@ from httpx import AsyncClient
 from src.core.database import Base, get_async_session
 from src.main import app
 
+load_dotenv()
 
-dotenv.load_dotenv()
 
-
-DB_USER = os.environ.get("DB_USER")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-print(DB_PASSWORD)
-DB_HOST = os.environ.get("DB_HOST")
-SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:superpassword@{DB_HOST}:5433/tests"
-
+DB_USER = os.environ.get("DB_USER_TEST")
+DB_PASSWORD = os.environ.get("DB_PASS_TEST")
+DB_HOST = os.environ.get("DB_HOST_TEST")
+DB_PORT = os.environ.get("DB_PORT_TEST")
+SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/tests"
+print("====================================>",DB_PASSWORD, DB_USER, DB_HOST, DB_PORT,"<<<<=================================================================")
 
 test_engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 

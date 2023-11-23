@@ -1,11 +1,31 @@
 version : '2.1'
 
 services:
-  db_auth:
-    container_name: db_auth
+
+  postgis:
+    restart: always
+    container_name: main_base
+    env_file:
+      - .env
     ports:
       - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=superpassword
-      - POSTGRES_USER=postgres
+        - POSTGRES_USER=postgres
+          -POSTGRES_DB=sport
     image: postgis/postgis
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile_application
+    container_name: application
+    env_file:
+      - .env
+    # command: ["bash_scripts/app.sh"]
+    command: bash -c "alembic upgrade head && gunicorn src.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
+    ports:
+      - "7800:8000"
+    depends_on:
+      - postgis
+

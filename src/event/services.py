@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException
 from src.event.models import Event, User, Comment
 from src.event.shemas.comments_schemas import CreateComment, UpdateComment
 from src.event.shemas.event_schemas import ReadEvent, CreateEvent, UpdateEvent
-from src.event.db_operations import EventCRUD, CommentCrud
+from src.event.db_operations import EventCRUD, CommentCrud, CityCrud
 
 
 class EventService:
@@ -68,3 +68,12 @@ class CommentService:
     async def update(self, obj_id: int, data: UpdateComment):
         obj = await self.comment_crud.get_obj_by_id_or_404(Comment, obj_id)
         return await self.comment_crud.update(obj, data)
+
+
+
+class CitiesService:
+    def __init__(self, city_crud: CityCrud = Depends()):
+        self.city_crud = city_crud
+
+    async def get_city_list(self):
+        return await self.city_crud.get_all()
