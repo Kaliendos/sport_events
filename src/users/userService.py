@@ -21,13 +21,15 @@ class UserService:
     async def get_user_profile(self, user_id: UUID, offset: int):
         path_to_image = "../static/images/fillip.jpeg"
         res = await self.user_crud.get_one(user_id, offset)
-        events, user, city_title, event_city_name = res
+        # events, user, city_title, event_city_name = res
+        events, user = res
+        print(events)
         if user is None:
             raise HTTPException(status_code=404)
         user["events"] = [_ for _ in events]
-        user["city"] = city_title
-        for i in range(len(events)):
-            events[i]["city"] = event_city_name[i]
+       # user["city"] = city_title
+        #for i in range(len(events)):
+           # events[i]["city"] = event_city_name[i]
         return user
 
     async def update_user_profile(self, user, schema):

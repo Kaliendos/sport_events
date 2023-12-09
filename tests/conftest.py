@@ -22,8 +22,6 @@ DB_PASSWORD = os.environ.get("DB_PASS_TEST")
 DB_HOST = os.environ.get("DB_HOST_TEST")
 DB_PORT = os.environ.get("DB_PORT_TEST")
 SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/tests"
-print("====================================>",DB_PASSWORD, DB_USER, DB_HOST, DB_PORT,"<<<<=================================================================")
-
 test_engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 
 

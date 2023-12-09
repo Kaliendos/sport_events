@@ -23,9 +23,9 @@ class ProfileOtherRead(BaseModel):
     last_name: str
     date_of_birth: datetime.date
     events: List[ReadEvent]
-    events: List[ReadEvent]
     avatar_image_path: str | None = None
     is_active: bool = True
+    email: str
 
     class ConfigDict:
         from_attributes = True

@@ -32,7 +32,12 @@ class EventService:
     async def create(self, data: CreateEvent, user: User):
         data = data.model_dump()
         data["owner_id"] = user.id
-        data["datetime"] = datetime.datetime.now()
+        input_datetime = data["datetime"]
+        if input_datetime:
+            data["datetime"] = datetime.datetime.strptime(input_datetime, "%Y-%m-%d %H:%M:%S")
+        else:
+            data["datetime"] = datetime.datetime.now()
+        print(data["datetime"])
         if data["city_id"] is None:
             data["city_id"] = user.city_id
         return await self.event_crud.create(data)

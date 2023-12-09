@@ -15,6 +15,27 @@ services:
           -POSTGRES_DB=sport
     image: postgis/postgis
 
+  pytest:
+    build:
+      context: .
+      dockerfile: Dockerfile_tests
+    env_file:
+      - .env
+    depends_on:
+      - test_db
+    command: pytest
+
+  test_db:
+    restart: always
+    container_name: test_base
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_PASSWORD=superpassword
+      - POSTGRES_USER=postgres
+        -POSTGRES_DB=tests
+    image: postgis/postgis
+
   app:
     build:
       context: .

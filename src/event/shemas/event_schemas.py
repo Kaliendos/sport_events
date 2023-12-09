@@ -7,6 +7,15 @@ from pydantic import BaseModel
 
 from src.event.shemas.comments_schemas import ReadComment
 
+EVENT_JSON_SCHEMA = """'id', event.id,
+            'city_id', event.city_id,
+            'city', city.title,
+            'description', event.description,
+            'owner_id', event.owner_id,
+            'datetime', event.datetime,
+            'location', event.location,
+            'publish_date', event.publish_date,
+            'owner_name', "user".first_name"""
 
 class LocationModel(BaseModel):
     coordinates: List
@@ -21,8 +30,10 @@ class ReadEvent(BaseModel):
     city: str  # Вычисляется название городо по city_id
     description: str
     owner_id: UUID
+    owner_name: str
     datetime: datetime.datetime
     location: LocationModel
+    publish_date: str
 
     class ConfigDict:
         from_attributes = True
@@ -42,6 +53,7 @@ class CreateEvent(BaseModel):
     description: str
     event_type: str
     location: str
+    datetime: str | None = None
 
     class ConfigDict:
         from_attributes = True

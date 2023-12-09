@@ -1,5 +1,7 @@
 import enum
 from typing import List
+import datetime as dt
+from sqlalchemy.sql import func
 
 from sqlalchemy import (
     Column, Table, Integer, ForeignKey, DateTime, Enum, String, Date
@@ -67,6 +69,7 @@ class Event(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     event_type = Column(Enum(EventType), default=EventType.cycling)
     owner_id = Column(UUID, ForeignKey("user.id", ondelete="CASCADE"))
+    publish_date = Column(DateTime, default=dt.datetime.now(), index=True)
     datetime = Column(DateTime)
     location = Column(Geometry("POINT", srid=4326))
     description = Column(String(380))

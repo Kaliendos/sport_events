@@ -2,7 +2,7 @@ from sqlalchemy import text, Select
 
 from src.core.core_sql_layer import CRUDSet
 from src.event.models import Event, Comment, City
-
+from src.event.shemas.event_schemas import EVENT_JSON_SCHEMA
 
 EVENT_LIMIT_DEFAULT: int = 10
 
@@ -13,16 +13,9 @@ class EventCRUD(CRUDSet):
     async def get_one(self, event_id: int):
         get_event_by_id = text(
             f'''
-            SELECT  json_build_object(
-                'id', event.id,
-                'city_id', event.city_id,
-                'city', city.title,
-                'description', event.description,
-                'owner_id', event.owner_id,
-                'datetime', event.datetime,
-                'location', event.location
-            ) FROM event INNER JOIN city
+            SELECT  json_build_object({EVENT_JSON_SCHEMA}) FROM event INNER JOIN city
             ON event.city_id = city.id
+            INNER JOIN "user" ON event.owner_id = "user".id
                  WHERE event.id = {event_id}
             '''
         )
@@ -61,15 +54,12 @@ class EventCRUD(CRUDSet):
         get_events_list = text(
             f"""
             SELECT json_build_object(
-            'id', event.id,
-            'city_id', event.city_id,
-            'city', city.title,
-            'description', event.description,
-            'owner_id', event.owner_id,
-            'datetime', event.datetime,
-            'location', event.location
+            {EVENT_JSON_SCHEMA}
             )
-            FROM event INNER JOIN city ON event.city_id = city.id  WHERE city_id = {city_id} ORDER BY datetime DESC
+            FROM event INNER JOIN city ON event.city_id = city.id
+             INNER JOIN "user" ON "user".id = event.owner_id
+            WHERE event.city_id = {city_id}
+             ORDER BY publish_date DESC 
             LIMIT {EVENT_LIMIT_DEFAULT} OFFSET {offset}
                 """
         )
