@@ -10,3 +10,5 @@ FastAPi, Postgresql и его расширение PostGis.
 2. установить зависимости pip install -r requirements.txt
 3. задать конфиги базы
 4. в postgres установить расширение postgis к текующей базе CREATE EXTENSION postgis;
+5. выполнить миграции alembic upgrade head
+
