@@ -5,3 +5,8 @@ FastAPi, Postgresql и его расширение PostGis.
 В качестве орм используется sqlalchemy
 В качестве решения jwt  авторизации была выбрана библиотека fastapi users.
 Проект протестирован через pytest.
+# установка 
+1. клонировать репозиторий
+2. установить зависимости pip install -r requirements.txt
+3. задать конфиги базы
+4. в postgres установить расширение postgis к текующей базе CREATE EXTENSION postgis;
