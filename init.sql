@@ -1,0 +1,2 @@
+CREATE USER postgres;
+GRANT ALL PRIVILEGES ON DATABASE docker TO postgres;

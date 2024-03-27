@@ -9,7 +9,6 @@ from src.event.models import User, get_user_db
 from src.users.auth import SECRET, auth_backend
 
 
-
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET
@@ -25,7 +24,8 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        print(f"Verification requested for user {user.id}. Verification token: {token}")
+        print("Verification requested for user"
+              f" {user.id}. Verification token: {token}")
 
 
 async def get_user_manager(user_db=Depends(get_user_db)):
@@ -36,3 +36,4 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](
     [auth_backend],
 )
 current_user = fastapi_users.current_user()
+current_user_optional = fastapi_users.current_user(optional=True)
