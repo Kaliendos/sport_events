@@ -7,8 +7,10 @@ FastAPi, Postgresql и его расширение PostGis.
 Проект протестирован через pytest.
 # установка 
 1. клонировать репозиторий
-2. установить зависимости pip install -r requirements.txt
-3. задать конфиги базы
-4. в postgres установить расширение postgis к текующей базе CREATE EXTENSION postgis;
-5. выполнить миграции alembic upgrade head
+2. Перейти в дирректорию проекта cd sport_events
+3. установить зависимости pip install -r requirements.txt
+4. Разввернуть постгрес локально, создать базу и в базу добавить расширение postgis CREATE EXTENSION postgis;
+5. задать конфиги базы в src.core.database файле
+7. выполнить миграции alembic upgrade head
+8. Запустить сервер uvicorn src.main:app --reload в корне проекта
 
